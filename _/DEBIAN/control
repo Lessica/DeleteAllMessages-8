@@ -1,0 +1,11 @@
+Package: com.darwindev.deleteallmessages8
+Depends: mobilesubstrate, firmware (>= 8.0)
+Architecture: iphoneos-arm
+Description: This Tweak add a "Delete All" button to the Message app. This Tweak is Open-source license. And This Tweak is corresponds to the notation for the following languages: en, ja, zh-Hans, zh-Hant, ko, ru, de, fr, it, la
+Maintainer: i_82 <i.82@me.com>
+Author: i_82 <i.82@me.com>
+Section: Tweaks
+Homepage: http://82flex.com
+Name: DeleteAllMessages 8
+Version: 0.0.1-7
+Installed-Size: 196
