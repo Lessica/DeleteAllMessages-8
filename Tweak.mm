@@ -50,21 +50,24 @@
 
 %new
 -(void)actionSheet:(UIActionSheet*)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if(buttonIndex == 0) {
-		
-		while(YES) {
-			CKConversationList *list = MSHookIvar<CKConversationList *>(self, "_conversationList");
-			UITableView *messages = MSHookIvar<UITableView *>(self, "_table");
-			
-			if ([(CKTranscriptBubbleData *)[list conversations] count] != 0) {
+	if (buttonIndex == 0) {
+		CKConversationList *list = MSHookIvar<CKConversationList *>(self, "_conversationList");
+		UITableView *messages = MSHookIvar<UITableView *>(self, "_table");
+		NSUInteger msgCount = [(CKTranscriptBubbleData *)[list conversations] count];
+		if (msgCount > 0) {
+			if ([list respondsToSelector:@selector(deleteConversationsAtIndexes:)]) {
 				[list deleteConversationsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [(CKTranscriptBubbleData *)[list conversations] count])]];
-			} else {
-				[self setEditing:NO animated:NO];
-				break;
+			} else if ([list respondsToSelector:@selector(deleteConversationAtIndex:)]) {
+				while (msgCount) {
+					[list deleteConversationAtIndex:(msgCount - 1)];
+					msgCount--;
+				}
+			} else if ([list respondsToSelector:@selector(deleteConversation:)]) {
+				[list deleteConversations:[list conversations]];
 			}
-			[messages reloadData];
 		}
-	
+		[self setEditing:NO animated:NO];
+		[messages reloadData];
 	}
 }
 %end
