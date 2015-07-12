@@ -1,6 +1,10 @@
 #import <ChatKit/ChatKit.h>
 #import "Languages.h"
 
+#define IS_IOS_7_0 [list respondsToSelector:@selector(deleteConversationAtIndex:)]
+#define IS_IOS_8_0 [list respondsToSelector:@selector(deleteConversationsAtIndexes:)]
+#define IS_IOS_8_4 [list respondsToSelector:@selector(deleteConversation:)]
+
 %hook CKConversationListController
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	%orig;
@@ -55,14 +59,14 @@
 		UITableView *messages = MSHookIvar<UITableView *>(self, "_table");
 		NSUInteger msgCount = [(CKTranscriptBubbleData *)[list conversations] count];
 		if (msgCount > 0) {
-			if ([list respondsToSelector:@selector(deleteConversationsAtIndexes:)]) {
-				[list deleteConversationsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [(CKTranscriptBubbleData *)[list conversations] count])]];
-			} else if ([list respondsToSelector:@selector(deleteConversationAtIndex:)]) {
+			if (IS_IOS_8_0) {
+				[list deleteConversationsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, msgCount)]];
+			} else if (IS_IOS_7_0) {
 				while (msgCount) {
 					[list deleteConversationAtIndex:(msgCount - 1)];
 					msgCount--;
 				}
-			} else if ([list respondsToSelector:@selector(deleteConversation:)]) {
+			} else if (IS_IOS_8_4) {
 				[list deleteConversations:[list conversations]];
 			}
 		}
